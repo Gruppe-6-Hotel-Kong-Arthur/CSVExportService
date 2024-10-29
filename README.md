@@ -17,6 +17,8 @@ docker build -t csv_export_service . && docker image prune -f
 docker run -d \        
   -p 5005:5005 \
   -e RESERVATION_SERVICE_URL=http://reservation_service:5003 \
+  -e DRINKS_SALES_SERVICE_URL=http://drinks_sales_service:5006 \
+  -e DRINKS_SERVICE_URL=http://drinks_service:5004 \
   --name csv_export_service \
   --network microservice-network \
   csv_export_service

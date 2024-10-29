@@ -7,7 +7,9 @@ from flask import Flask, send_file, jsonify
 app = Flask(__name__)
 
 RESERVATION_SERVICE_URL = os.getenv("RESERVATION_SERVICE_URL")
-#DRINK_SALES_SERVICE_URL = os.getenv("DRINK_SALES_SERVICE_URL")
+DRINKS_SERVICE_URL = os.getenv("DRINKS_SERVICE_URL")
+DRINKS_SAVER_SERVICE_URL = os.getenv("DRINKS_SAVER_SERVICE_URL")
+
 
 @app.route('/api/v1/reservation/data/csv', methods=['GET'])
 def get_reservation_data():
@@ -57,6 +59,23 @@ def get_reservation_data():
             except:
                 pass
 
+@app.route('/api/v1/drinks/data/csv', methods=['GET'])
+def get_drinks_data():
+    try:
+        # Get data from drinks service
+        response = requests.get(f'{DRINKS_SERVICE_URL}/api/v1/drinks')
+        drinks_data = response.json()
+
+        #Get data from drink sales service
+        response = requests.get(f'{DRINKS_SAVER_SERVICE_URL}/api/v1/drink_sales/purchase')
+        drink_sales_data = response.json()
+
+        app.logger.info(f"drinks data: {drinks_data}")
+        app.logger.info(f"drink sales data: {drink_sales_data}")
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
 
 # Error handler for 404 Not Found
 @app.errorhandler(404)
