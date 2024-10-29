@@ -13,26 +13,32 @@ RESERVATION_SERVICE_URL = os.getenv("RESERVATION_SERVICE_URL")
 def get_reservation_data():
     try:
         # Get data from reservation service
-        response = requests.get(RESERVATION_SERVICE_URL)
+        response = requests.get(f'{RESERVATION_SERVICE_URL}/api/v1/reservations')
         reservation_data = response.json()
 
-        # Make csv scheme
-        data_scheme = {
-            "first_name": reservation_data["guest"]["first_name"],
-            "last_name": reservation_data["guest"]["last_name"],
-            "country": reservation_data["guest"]["country"],
-            "room_type": reservation_data["room"]["room_type"],
-            "days_rented": reservation_data["reservation_details"]["days_rented"],
-            "price": reservation_data["reservation_details"]["price"]
-        }
         # Write data to CSV
         csv_filename = 'reservation_data.csv'
+
+        # Define the field names for our CSV
+        fieldnames = ['first_name', 'last_name', 'country', 'room_type', 'days_rented', 'price']
+
         with open(csv_filename, mode='w', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=data_scheme.keys())
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerow(data_scheme)
+
+            # Process each reservation
+            for reservation in reservation_data:
+                data_row = {
+                    "first_name": reservation.get("guest", {}).get("first_name"),
+                    "last_name": reservation.get("guest", {}).get("last_name"),
+                    "country": reservation.get("guest", {}).get("country"),
+                    "room_type": reservation.get("room", {}).get("room_type"),
+                    "days_rented": reservation.get("reservation_details", {}).get("days_rented"),
+                    "price": reservation.get("reservation_details", {}).get("price")
+                }
+                writer.writerow(data_row)
         
-        print("CSV file created successfully.")
+        app.logger.info(f"CSV file created successfully")
 
         # Send the CSV file as a response to the client
         return send_file(
@@ -40,9 +46,16 @@ def get_reservation_data():
             mimetype='text/csv',
             download_name='reservation_data.csv',
             as_attachment=True,
-        ), 200
+        ), 200, app.logger.info(f"CSV file sent successfully")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        # Clean up the temporary file if it exists
+        if csv_filename in locals():
+            try:
+                os.remove(csv_filename)
+            except:
+                pass
 
 
 # Error handler for 404 Not Found
@@ -57,8 +70,4 @@ def internal_error(error):
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5005, debug=True)
-
-
-
-
-   
+    
