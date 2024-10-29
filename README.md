@@ -10,7 +10,7 @@ python3 app.py
 ```
 
 ```bash
-docker build -t csv_export_service .
+docker build -t csv_export_service . && docker image prune -f
 ```
 
 ```bash
