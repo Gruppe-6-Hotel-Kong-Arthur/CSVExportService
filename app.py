@@ -4,13 +4,12 @@ import os, requests
 
 from flask import Flask, send_file, jsonify
 
-
 app = Flask(__name__)
 
 RESERVATION_SERVICE_URL = os.getenv("RESERVATION_SERVICE_URL")
 #DRINK_SALES_SERVICE_URL = os.getenv("DRINK_SALES_SERVICE_URL")
 
-@app.route('api/v1/reservation/data/csv', methods=['GET'])
+@app.route('/api/v1/reservation/data/csv', methods=['GET'])
 def get_reservation_data():
     try:
         # Get data from reservation service
