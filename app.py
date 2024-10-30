@@ -70,12 +70,56 @@ def get_drinks_data():
         drinks_sales_response = requests.get(f'{DRINKS_SALES_SERVICE_URL}/api/v1/drink_sales/purchase')
         drink_sales_data = drinks_sales_response.json()
 
-        app.logger.info(f"drinks data: {drinks_data}")
-        app.logger.info(f"drink sales data: {drink_sales_data}")
+        # Convert both lists to dictionaries based on "drink_id"
+        drinks_dict = {drink["drink_id"]: drink for drink in drinks_data}
+        drink_sales_dict = {sale["drink_id"]: sale for sale in drink_sales_data}
 
-        return jsonify(1), 200
+
+        # Combine data on the "drink_id" key
+        combined_data = []
+        for drink_id, drink in drinks_dict.items():
+            combined_entry = {**drink, **drink_sales_dict.get(drink_id, {})}
+            combined_data.append(combined_entry)
+
+        # Write data to CSV
+        csv_filename = 'drinks_data.csv'
+
+        # Define the field names for our CSV
+        fieldnames = ['drink_id', 'drink_name', 'category', 'price_dkk', 'units_sold']
+
+        with open(csv_filename, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+
+            # Process each drink
+            for drink in combined_data:
+                data_row = {
+                    "drink_id": drink.get("drink_id"),
+                    "drink_name": drink.get("drink_name"),
+                    "category": drink.get("category"),
+                    "price_dkk": drink.get("price_dkk"),
+                    "units_sold": drink.get("units_sold")
+                }
+                writer.writerow(data_row)
+
+        app.logger.info(f"CSV file created successfully")
+
+        # Send the CSV file as a response to the client
+        return send_file(
+            csv_filename,
+            mimetype='text/csv',
+            download_name='drinks_data.csv',
+            as_attachment=True,
+        ), 200, app.logger.info(f"CSV file sent successfully")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        # Clean up the temporary file if it exists
+        if csv_filename in locals():
+            try:
+                os.remove(csv_filename)
+            except:
+                pass
         
 
 # Error handler for 404 Not Found
