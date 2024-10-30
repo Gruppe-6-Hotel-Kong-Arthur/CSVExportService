@@ -74,6 +74,7 @@ def get_drinks_data():
         drinks_dict = {drink["drink_id"]: drink for drink in drinks_data}
         drink_sales_dict = {sale["drink_id"]: sale for sale in drink_sales_data}
 
+
         # Combine data on the "drink_id" key
         combined_data = []
         for drink_id, drink in drinks_dict.items():
