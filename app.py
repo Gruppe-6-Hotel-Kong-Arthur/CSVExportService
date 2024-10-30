@@ -73,6 +73,7 @@ def get_drinks_data():
         app.logger.info(f"drinks data: {drinks_data}")
         app.logger.info(f"drink sales data: {drink_sales_data}")
 
+        return jsonify(1), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
         
