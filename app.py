@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 RESERVATION_SERVICE_URL = os.getenv("RESERVATION_SERVICE_URL")
 DRINKS_SERVICE_URL = os.getenv("DRINKS_SERVICE_URL")
-DRINKS_SAVER_SERVICE_URL = os.getenv("DRINKS_SAVER_SERVICE_URL")
+DRINKS_SALES_SERVICE_URL = os.getenv("DRINKS_SALES_SERVICE_URL")
 
 
 @app.route('/api/v1/reservation/data/csv', methods=['GET'])
@@ -63,12 +63,12 @@ def get_reservation_data():
 def get_drinks_data():
     try:
         # Get data from drinks service
-        response = requests.get(f'{DRINKS_SERVICE_URL}/api/v1/drinks')
-        drinks_data = response.json()
+        drinks_response = requests.get(f'{DRINKS_SERVICE_URL}/api/v1/drinks')
+        drinks_data = drinks_response.json()
 
         #Get data from drink sales service
-        response = requests.get(f'{DRINKS_SAVER_SERVICE_URL}/api/v1/drink_sales/purchase')
-        drink_sales_data = response.json()
+        drinks_sales_response = requests.get(f'{DRINKS_SALES_SERVICE_URL}/api/v1/drink_sales/purchase')
+        drink_sales_data = drinks_sales_response.json()
 
         app.logger.info(f"drinks data: {drinks_data}")
         app.logger.info(f"drink sales data: {drink_sales_data}")
