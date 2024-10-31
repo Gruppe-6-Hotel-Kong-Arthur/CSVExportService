@@ -49,11 +49,6 @@ source .venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Set environment variables
-export RESERVATION_SERVICE_URL=http://reservation_service:5001
-export DRINKS_SERVICE_URL=http://drink_service:5004
-export DRINKS_SALES_SERVICE_URL=http://drink_sales_service:5006
-
 # Run the application
 python3 app.py
 ```
