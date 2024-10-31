@@ -7,8 +7,8 @@ from flask import Flask, send_file, jsonify
 app = Flask(__name__)
 
 RESERVATION_SERVICE_URL = os.getenv("RESERVATION_SERVICE_URL")
-DRINKS_SERVICE_URL = os.getenv("DRINKS_SERVICE_URL")
-DRINKS_SALES_SERVICE_URL = os.getenv("DRINKS_SALES_SERVICE_URL")
+DRINK_SERVICE_URL = os.getenv("DRINK_SERVICE_URL")
+DRINK_SALES_SERVICE_URL = os.getenv("DRINK_SALES_SERVICE_URL")
 
 
 @app.route('/api/v1/reservation/data/csv', methods=['GET'])
@@ -52,23 +52,16 @@ def get_reservation_data():
         ), 200, app.logger.info(f"CSV file sent successfully")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    finally:
-        # Clean up the temporary file if it exists
-        if csv_filename in locals():
-            try:
-                os.remove(csv_filename)
-            except:
-                pass
 
 @app.route('/api/v1/drinks/data/csv', methods=['GET'])
 def get_drinks_data():
     try:
         # Get data from drinks service
-        drinks_response = requests.get(f'{DRINKS_SERVICE_URL}/api/v1/drinks')
+        drinks_response = requests.get(f'{DRINK_SERVICE_URL}/api/v1/drinks')
         drinks_data = drinks_response.json()
 
         #Get data from drink sales service
-        drinks_sales_response = requests.get(f'{DRINKS_SALES_SERVICE_URL}/api/v1/drink_sales/purchase')
+        drinks_sales_response = requests.get(f'{DRINK_SALES_SERVICE_URL}/api/v1/drink_sales/purchase')
         drink_sales_data = drinks_sales_response.json()
 
         # Convert both lists to dictionaries based on "drink_id"
@@ -114,14 +107,6 @@ def get_drinks_data():
         ), 200, app.logger.info(f"CSV file sent successfully")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    finally:
-        # Clean up the temporary file if it exists
-        if csv_filename in locals():
-            try:
-                os.remove(csv_filename)
-            except:
-                pass
-        
 
 # Error handler for 404 Not Found
 @app.errorhandler(404)

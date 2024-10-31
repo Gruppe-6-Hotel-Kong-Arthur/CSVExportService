@@ -70,7 +70,7 @@ docker run -d \
   --name csv_export_service \
   --network microservice-network \
   -e RESERVATION_SERVICE_URL=http://reservation_service:5001 \
-  -e DRINKS_SERVICE_URL=http://drink_service:5004 \
+  -e DRINK_SERVICE_URL=http://drink_service:5004 \
   -e DRINKS_SALES_SERVICE_URL=http://drink_sales_service:5006 \
   csv_export_service
 ```
