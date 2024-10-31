@@ -22,7 +22,7 @@ def get_reservation_data():
         csv_filename = 'reservation_data.csv'
 
         # Define the field names for our CSV
-        fieldnames = ['first_name', 'last_name', 'country', 'room_type', 'days_rented', 'price']
+        fieldnames = ['first_name', 'last_name', 'country', 'room_type', 'days_rented', 'season', 'price']
 
         with open(csv_filename, mode='w', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -36,6 +36,7 @@ def get_reservation_data():
                     "country": reservation.get("guest", {}).get("country"),
                     "room_type": reservation.get("room", {}).get("room_type"),
                     "days_rented": reservation.get("reservation_details", {}).get("days_rented"),
+                    "season": reservation.get("reservation_details", {}).get("season"),
                     "price": reservation.get("reservation_details", {}).get("price")
                 }
                 writer.writerow(data_row)
